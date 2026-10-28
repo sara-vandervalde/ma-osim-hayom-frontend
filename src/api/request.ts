@@ -12,6 +12,10 @@ export async function request(path: string, method = 'GET', body?: unknown, toke
         headers: headers,
         body: body ? JSON.stringify(body) : undefined
     })
+    if (response.status === 401 && token) {
+        localStorage.removeItem('token')
+        window.location.href = '/login'
+    }
     if (response.status === 204) {
         return null
     }

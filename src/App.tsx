@@ -1,8 +1,4 @@
 
-// import { useContext } from 'react'
-// import { request } from './api/request'
-import { useAuth } from './context/AuthContext'
-import { login } from './api/auth'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import LoginPage from './pages/LoginPage'
 import ActivityFormPage from './pages/ActivityFormPage'
@@ -31,7 +27,6 @@ import GuestRoute from './components/GuestRoute'
 
 
 function App() {
-  const auth = useAuth()
   return (
     <>
       <h1>מה עושים היום?</h1>
@@ -40,10 +35,6 @@ function App() {
 
       {/* <p>{auth.user ? auth.user.displayName : 'אין משתמש מחובר'}</p> */}
 
-      <button onClick={async () => {
-        const data = await login({ username: 'parent_demo', password: 'Demo1234' })
-        auth.signIn(data.token, data.user)
-      }}>התחברות</button>
 
       {/* <button onClick={() => auth.signOut()}>התנתקות</button> */}
 
