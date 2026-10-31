@@ -5,7 +5,7 @@ import type { Activity } from "../types"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { deleteActivity, approveActivity } from "../api/activities"
 import { categoryStyles } from "../categoryStyles"
-import { Baby, Clock, MapPin, Wallet, Hourglass, Pencil, Trash2, Check, Globe } from "lucide-react"
+import { Baby, Clock, MapPin, Wallet, Hourglass, Pencil, Trash2, Check, Globe, AlertCircle } from "lucide-react"
 
 
 type Props = {
@@ -65,14 +65,21 @@ export default function ActivityCard({ activity }: Props) {
                 <p className="flex items-center gap-2 rounded-xl bg-warn-bg text-warn text-sm font-bold px-3 py-2"><Hourglass className="w-4 h-4 shrink-0" aria-hidden="true" /> ממתין לאישור, הוצע על ידי {activity.createdBy.displayName}</p>
             )}
 
+            {deleteMutation.error && (
+                <p className="flex items-center gap-2 rounded-xl bg-danger-bg text-danger text-sm font-bold px-3 py-2"><AlertCircle className="w-4 h-4 shrink-0" aria-hidden="true" />שגיאה במחיקה: {deleteMutation.error.message}</p>
+            )}
+            {approveMutation.error && (
+                <p className="flex items-center gap-2 rounded-xl bg-danger-bg text-danger text-sm font-bold px-3 py-2"><AlertCircle className="w-4 h-4 shrink-0" aria-hidden="true" />שגיאה באישור: {approveMutation.error.message}</p>
+            )}
+
             {(canEdit || canApprove) && (
                 <div className="flex flex-wrap gap-2 pt-3 mt-auto border-t border-line">
                     {canEdit && <Link to={`/activities/${activity.id}/edit`} className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border-2 border-line font-bold text-ink hover:border-brand hover:text-brand transition"><Pencil className="w-4 h-4" aria-hidden="true" />ערוך</Link>}
-                    {canEdit && <button onClick={handleDelete} className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-bold text-danger hover:bg-danger-bg transition cursor-pointer"><Trash2 className="w-4 h-4" aria-hidden="true" />מחק</button>}
+                    {canEdit && <button onClick={handleDelete} disabled={deleteMutation.isPending} className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-bold text-danger hover:bg-danger-bg transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"><Trash2 className="w-4 h-4" aria-hidden="true" />{deleteMutation.isPending ? 'מוחק...' : 'מחק'}</button>}
                     {canApprove && (
                         <>
-                            <button onClick={() => approveMutation.mutate(false)} className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-ok text-white font-bold hover:opacity-90 transition cursor-pointer"><Check className="w-4 h-4" aria-hidden="true" />אשר למשפחה</button>
-                            <button onClick={() => approveMutation.mutate(true)} className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border-2 border-ok text-ok font-bold hover:bg-ok-bg transition cursor-pointer"><Globe className="w-4 h-4" aria-hidden="true" />אשר כציבורי</button>
+                            <button onClick={() => approveMutation.mutate(false)} disabled={approveMutation.isPending} className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-ok text-white font-bold hover:opacity-90 transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"><Check className="w-4 h-4" aria-hidden="true" />{approveMutation.isPending ? 'מאשר...' : 'אשר למשפחה'}</button>
+                            <button onClick={() => approveMutation.mutate(true)} disabled={approveMutation.isPending} className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border-2 border-ok text-ok font-bold hover:bg-ok-bg transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"><Globe className="w-4 h-4" aria-hidden="true" />{approveMutation.isPending ? 'מאשר...' : 'אשר כציבורי'}</button>
                         </>
                     )}
                 </div>

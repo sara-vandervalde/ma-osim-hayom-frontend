@@ -7,11 +7,16 @@ export async function request(path: string, method = 'GET', body?: unknown, toke
     if (token) {
         headers.Authorization = `Bearer ${token}`
     }
-    const response = await fetch(BASE_URL + path, {
-        method: method,
-        headers: headers,
-        body: body ? JSON.stringify(body) : undefined
-    })
+    let response: Response
+    try {
+        response = await fetch(BASE_URL + path, {
+            method: method,
+            headers: headers,
+            body: body ? JSON.stringify(body) : undefined
+        })
+    } catch {
+        throw new Error('אין חיבור לשרת. בדקו את החיבור לאינטרנט ונסו שוב')
+    }
     if (response.status === 401 && token) {
         localStorage.removeItem('token')
         window.location.href = '/login'
@@ -19,9 +24,14 @@ export async function request(path: string, method = 'GET', body?: unknown, toke
     if (response.status === 204) {
         return null
     }
-    const data = await response.json()
+    let data
+    try {
+        data = await response.json()
+    } catch {
+        throw new Error('השרת החזיר תשובה לא תקינה. נסו שוב בעוד רגע')
+    }
     if (!response.ok) {
-        throw new Error(data.error.message)
+        throw new Error(data.error?.message ?? 'משהו השתבש. נסו שוב')
     }
     return data
 } 

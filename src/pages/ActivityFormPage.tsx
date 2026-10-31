@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import ActivityForm from "../components/ActivityForm"
 import { useAuth } from "../context/AuthContext"
-import { useNavigate, useParams } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 import type { ActivityInput } from "../types"
 import { addActivity, getActivity, updateActivity } from "../api/activities"
 import { Loader2, AlertCircle } from "lucide-react"
@@ -14,7 +14,7 @@ export default function ActivityFormPage() {
   const { id } = useParams()
   const isEdit = id !== undefined
 
-  const { data: activity, isLoading } = useQuery({
+  const { data: activity, isLoading, error: loadError } = useQuery({
     queryKey: ['activity', id],
     queryFn: () => getActivity(auth.token!, Number(id)),
     enabled: isEdit,
@@ -35,6 +35,17 @@ export default function ActivityFormPage() {
     return <p className="flex flex-col items-center gap-3 bg-white rounded-2xl shadow-sm p-10 text-lg font-bold text-ink-soft"><Loader2 className="w-10 h-10 text-brand motion-safe:animate-spin" aria-hidden="true" />טוען...</p>
   }
 
+  if (isEdit && loadError) {
+    return (
+      <div className="max-w-lg mx-auto flex flex-col items-center gap-4 bg-white rounded-3xl shadow-lg p-10 text-center">
+        <AlertCircle className="w-12 h-12 text-danger" aria-hidden="true" />
+        <p className="text-xl font-bold text-ink">לא ניתן לטעון את הפעילות</p>
+        <p className="text-ink-soft">{loadError.message}</p>
+        <Link to="/activities" className="px-6 py-3 rounded-xl bg-brand text-white font-bold hover:bg-brand-dark transition">חזרה לרשימה</Link>
+      </div>
+    )
+  }
+
   return (
     <div className="max-w-3xl mx-auto bg-white rounded-3xl shadow-lg p-6 md:p-10">
       <div className="flex h-1.5 rounded-full overflow-hidden mb-8" aria-hidden="true">
@@ -47,7 +58,7 @@ export default function ActivityFormPage() {
       <h1 className="text-3xl md:text-4xl font-extrabold text-ink mb-6">{isEdit ? 'עריכת פעילות' : 'הוספת פעילות'}</h1>
       {mutation.isPending && <p className="flex items-center gap-2 rounded-xl bg-mint text-brand font-bold px-4 py-3 mb-5"><Loader2 className="w-5 h-5 motion-safe:animate-spin" aria-hidden="true" />שומר...</p>}
       {mutation.error && <p className="flex items-center gap-2 rounded-xl bg-danger-bg text-danger font-bold px-4 py-3 mb-5"><AlertCircle className="w-5 h-5 shrink-0" aria-hidden="true" />שגיאה: {mutation.error.message}</p>}
-      <ActivityForm key={id ?? 'new'} onSubmit={(values) => mutation.mutate(values)} defaultValues={activity} />
+      <ActivityForm key={id ?? 'new'} onSubmit={(values) => mutation.mutate(values)} defaultValues={activity} submitting={mutation.isPending} />
     </div>
   )
 }

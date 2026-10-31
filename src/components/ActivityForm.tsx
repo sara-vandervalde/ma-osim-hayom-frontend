@@ -8,9 +8,10 @@ import { PenLine, FileText, Tag, MapPin, Wallet, Baby, Clock, Globe, ChevronDown
 type Props = {
     onSubmit: (values: ActivityInput) => void
     defaultValues?: ActivityInput
+    submitting?: boolean
 }
 
-export default function ActivityForm({ onSubmit ,defaultValues}: Props) {
+export default function ActivityForm({ onSubmit ,defaultValues, submitting}: Props) {
     const { register, handleSubmit, formState: { errors } } = useForm<ActivityInput>({defaultValues})
     const auth = useAuth()
     return (
@@ -92,6 +93,7 @@ export default function ActivityForm({ onSubmit ,defaultValues}: Props) {
                             required: 'חובה',
                             min: { value: 0, message: 'מינימום גיל 0' },
                             max: { value: 18, message: 'מקסימום גיל 18' },
+                            validate: (value) => Number.isInteger(value) || 'יש להזין מספר שלם',
                         })} className="w-full rounded-xl border-2 border-line bg-mint/40 ps-12 pe-4 py-3.5 text-base transition focus:outline-none focus:border-brand focus:bg-white focus:ring-4 focus:ring-brand/15" />
                     </div>
                     {errors.minAge && <p className="text-sm text-danger font-medium">{errors.minAge.message}</p>}
@@ -106,7 +108,10 @@ export default function ActivityForm({ onSubmit ,defaultValues}: Props) {
                             required: 'חובה',
                             min: { value: 0, message: 'מינימום גיל 0' },
                             max: { value: 18, message: 'מקסימום גיל 18' },
-                            validate: (value, values) => value >= values.minAge || 'גיל מקסימלי גדול או שווה לגיל מינימלי',
+                            validate: {
+                                wholeNumber: (value) => Number.isInteger(value) || 'יש להזין מספר שלם',
+                                notBelowMin: (value, values) => value >= values.minAge || 'גיל מקסימלי גדול או שווה לגיל מינימלי',
+                            },
                         })} className="w-full rounded-xl border-2 border-line bg-mint/40 ps-12 pe-4 py-3.5 text-base transition focus:outline-none focus:border-brand focus:bg-white focus:ring-4 focus:ring-brand/15" />
                     </div>
                     {errors.maxAge && <p className="text-sm text-danger font-medium">{errors.maxAge.message}</p>}
@@ -121,6 +126,7 @@ export default function ActivityForm({ onSubmit ,defaultValues}: Props) {
                             required: 'חובה',
                             min: { value: 1, message: 'מינימום 1 דקה' },
                             max: { value: 600, message: 'מקסימום 600 דקות' },
+                            validate: (value) => Number.isInteger(value) || 'יש להזין מספר שלם',
                         })} className="w-full rounded-xl border-2 border-line bg-mint/40 ps-12 pe-4 py-3.5 text-base transition focus:outline-none focus:border-brand focus:bg-white focus:ring-4 focus:ring-brand/15" />
                     </div>
                     {errors.durationMinutes && <p className="text-sm text-danger font-medium">{errors.durationMinutes.message}</p>}
@@ -136,7 +142,7 @@ export default function ActivityForm({ onSubmit ,defaultValues}: Props) {
             )}
 
             <div className="flex flex-wrap gap-3 pt-5 border-t border-line">
-                <button type="submit" className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-brand text-white text-lg font-bold shadow-md shadow-brand/30 transition hover:bg-brand-dark hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"><Save className="w-5 h-5" aria-hidden="true" />שמירה</button>
+                <button type="submit" disabled={submitting} className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-brand text-white text-lg font-bold shadow-md shadow-brand/30 transition hover:bg-brand-dark hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 cursor-pointer"><Save className="w-5 h-5" aria-hidden="true" />{submitting ? 'שומר...' : 'שמירה'}</button>
                 <Link to="/activities" className="inline-flex items-center px-6 py-3.5 rounded-xl border-2 border-line text-lg font-bold text-ink-soft hover:border-brand hover:text-brand transition">ביטול</Link>
             </div>
         </form>
