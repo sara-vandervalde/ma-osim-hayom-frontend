@@ -1,32 +1,125 @@
-# React + TypeScript + Vite
+# מה עושים היום? 🌞
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+מאגר רעיונות לפעילויות פנאי לילדים. ההורים לא שוברים את הראש במה להעסיק את הילדים, והילדים מוצאים פעילות בעצמם.
 
-Currently, two official plugins are available:
+הורים מוסיפים רעיונות, מאשרים רעיונות שהילדים הציעו, ומחליטים אם פעילות תהיה ציבורית (כל המשפחות) או פרטית (רק המשפחה). ילדים מסננים ובוחרים פעילויות, ומציעים רעיונות משלהם שממתינים לאישור ההורה.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## קישורים
 
-## React Compiler
+| מה | קישור |
+|---|---|
+| האתר | https://ma-osim-hayom.onrender.com |
+| השרת (API) | https://ma-osim-hayom-api.onrender.com/api |
+| תיעוד ה־API | https://ma-osim-hayom-api.onrender.com/api-docs |
+| קוד הריאקט | https://github.com/sara-vandervalde/ma-osim-hayom-frontend |
+| קוד השרת | https://github.com/sara-vandervalde/ma-osim-hayom-backend |
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+> ⏳ **השרת רץ על התוכנית החינמית של Render**, ונרדם אחרי זמן בלי שימוש. בכניסה הראשונה ההתחברות יכולה לקחת עד דקה, ובזמן הזה מוצג "מתחבר...". אחרי זה הכול מהיר.
 
-## Expanding the Oxlint configuration
+## משתמשי הדגמה
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+| משתמש | סוג | משפחה |
+|---|---|---|
+| `parent_demo` | הורה | משפחה 1 |
+| `child_demo` | ילד | משפחה 1 (הילד של `parent_demo`) |
+| `parent2_demo` | הורה | משפחה 2 |
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+**הסיסמה לכל המשתמשים מצורפת להגשה.** אפשר גם להירשם כמשתמש חדש דרך עמוד ההרשמה.
+
+## הרשאות: מי רואה ומה מותר
+
+| | הורה | ילד |
+|---|---|---|
+| רואה | הפעילויות של המשפחה, הרעיונות הממתינים של הילדים שלו, והפעילויות הציבוריות של כולם | הפעילויות של המשפחה, הרעיונות שהוא הציע, והפעילויות הציבוריות של כולם |
+| מוסיף פעילות | כן, מאושרת מיד. בוחר אם ציבורית | כן, נשמרת כ"ממתין לאישור" |
+| עורך ומוחק | כל פעילות של המשפחה | רק רעיון שהוא הציע, ורק כל עוד הוא ממתין |
+| מאשר | רעיונות של הילדים שלו, למשפחה או כציבורי | לא |
+
+השרת אוכף את כל ההרשאות (ומחזיר 403 למי שאסור לו). בריאקט, כפתור שאסור ללחוץ עליו פשוט לא מוצג.
+
+## איך לבדוק (תרחיש קצר)
+
+1. מתחברים כ־`child_demo`, לוחצים "פעילות חדשה" ומוסיפים רעיון. הוא מופיע עם "ממתין לאישור", ויש עליו "ערוך" ו"מחק".
+2. מתנתקים ומתחברים כ־`parent_demo`. על הרעיון של הילד מופיעים "אשר למשפחה" ו"אשר כציבורי". מאשרים.
+3. מתחברים שוב כ־`child_demo`. על הרעיון שאושר כבר אין "ערוך" ו"מחק".
+4. מתחברים כ־`parent2_demo` (משפחה אחרת). רואים רק את הפעילויות הציבוריות של משפחה 1, בלי הפרטיות ובלי הממתינות, ובלי כפתורי עריכה עליהן.
+5. בכל אחד מהמשתמשים אפשר לסנן לפי קטגוריה, ולרענן (F5) בכל עמוד בלי להתנתק.
+
+## הדרישות ואיפה הן בקוד
+
+| דרישה | איפה |
+|---|---|
+| כניסה למערכת | `pages/LoginPage.tsx`, `pages/RegisterPage.tsx` |
+| שני סוגי משתמשים עם הרשאות שונות | `components/ActivityCard.tsx` (`canEdit`, `canApprove`), התיבה "ציבורי" ב־`components/ActivityForm.tsx` |
+| אובייקט מרכזי | פעילות (`Activity` ב־`types.ts`) |
+| רשימה | `pages/ActivitiesPage.tsx`, `components/ActivityCard.tsx` |
+| הוספה ועריכה | טופס אחד לשתיהן: `components/ActivityForm.tsx`, `pages/ActivityFormPage.tsx` |
+| לפחות 5 שדות | 8 שדות: שם, תיאור, קטגוריה, מיקום, מגיל, עד גיל, משך, עלות (ועוד "ציבורי" להורה) |
+| קטגוריה / סטטוס | קטגוריה (5 סוגים), סטטוס (ממתין / מאושר) |
+| חיפוש, סינון או מיון | סינון לפי קטגוריה: `components/FilterBar.tsx` |
+| מידע מהשרת ושמור במסד נתונים | `api/` מול שרת Express + PostgreSQL |
+| React + TypeScript | כל הקוד ב־`.tsx` / `.ts`, עם טיפוסים ב־`types.ts` |
+| React Router | `App.tsx`, נתיב מוגן `components/ProtectedRoute.tsx`, ו־`components/GuestRoute.tsx` |
+| React Hook Form + Validation | טפסי ההתחברות, ההרשמה והפעילות |
+| React Query | `useQuery` לרשימה ולפעילות לעריכה, `useMutation` להוספה, עריכה, מחיקה ואישור |
+| Context | `context/AuthContext.tsx` (משתמש, token, התחברות והתנתקות) |
+| Loading | "טוען...", "מתחבר...", "שומר..." |
+| טיפול בשגיאות | שגיאות מהשרת מוצגות בטפסים וברשימה. 401 (token שפג) מנתק ומעביר להתחברות (`api/request.ts`) |
+| מניעת שכפול קוד | פונקציית `request` אחת לכל הקריאות, טופס אחד להוספה ולעריכה, תרגומים בקובץ אחד (`labels.ts`) |
+
+## טכנולוגיות
+
+React 19, TypeScript, Vite, React Router, React Hook Form, TanStack React Query, Context, Tailwind CSS, ואייקונים מ־Lucide.
+
+## מבנה התיקיות
+
+```
+src/
+├── api/            הקריאות לשרת
+│   ├── request.ts      פונקציה אחת לכל הקריאות (כתובת, token, שגיאות, 401)
+│   ├── auth.ts         התחברות, הרשמה, "מי אני"
+│   └── activities.ts   רשימה, פעילות אחת, הוספה, עריכה, מחיקה, אישור
+├── context/
+│   └── AuthContext.tsx המשתמש המחובר וה־token, ו־useAuth
+├── components/     חלקים שחוזרים בכמה עמודים
+│   ├── Navbar.tsx          תפריט עליון
+│   ├── ProtectedRoute.tsx  עמודים למחוברים בלבד
+│   ├── GuestRoute.tsx      עמודים למי שלא מחובר (התחברות, הרשמה)
+│   ├── ActivityCard.tsx    כרטיס פעילות וכפתורי ערוך / מחק / אשר
+│   ├── ActivityForm.tsx    טופס הפעילות (הוספה ועריכה)
+│   └── FilterBar.tsx       סינון לפי קטגוריה
+├── pages/          עמוד לכל נתיב
+├── types.ts        הטיפוסים (משתמש, פעילות, קטגוריה...)
+├── labels.ts       תרגום הערכים לעברית
+├── categoryStyles.ts  צבע ואייקון לכל קטגוריה
+└── index.css       Tailwind וערכת העיצוב (צבעים, פונט)
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## הרצה במחשב
+
+צריך שהשרת ירוץ במחשב (הוראות ב־[קוד השרת](https://github.com/sara-vandervalde/ma-osim-hayom-backend)), או להפנות לשרת בענן.
+
+```bash
+npm install
+cp .env.example .env      # ולעדכן בו את VITE_API_URL אם צריך
+npm run dev               # האתר ב־http://localhost:5180
+```
+
+| פקודה | מה עושה |
+|---|---|
+| `npm run dev` | הרצה לפיתוח |
+| `npm run build` | בדיקת TypeScript ובנייה לתיקיית `dist` |
+| `npm run lint` | בדיקת הקוד |
+
+### משתני סביבה
+
+| משתנה | מה זה | דוגמה |
+|---|---|---|
+| `VITE_API_URL` | כתובת השרת, כולל `/api` בסוף | `http://localhost:3000/api` |
+
+### העלאה ל־Render (Static Site)
+
+- Build Command: `npm install && npm run build`
+- Publish Directory: `dist`
+- Environment: `VITE_API_URL=https://ma-osim-hayom-api.onrender.com/api`
+- Redirects/Rewrites: `/*` ← `/index.html` (Rewrite), כדי שרענון בעמוד פנימי לא יחזיר 404
