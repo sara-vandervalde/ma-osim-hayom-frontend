@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+/* ערכת העיצוב "בוקר של שבת": כל צבע כאן הופך למחלקות כמו bg-brand, text-ink, border-line */
+@theme {
+  --font-sans: "Rubik", system-ui, sans-serif;
+
+  /* צבעי בסיס */
+  --color-brand: #0E7490;
+  --color-brand-dark: #155E75;
+  --color-sun: #FFB627;
+  --color-mint: #EEF8F2;
+  --color-line: #D5E5DB;
+  --color-ink: #1F2937;
+  --color-ink-soft: #5B6475;
+
+  /* מצבים */
+  --color-ok: #15803D;
+  --color-ok-bg: #DCFCE7;
+  --color-danger: #C62828;
+  --color-danger-bg: #FDECEC;
+  --color-warn: #B45309;
+  --color-warn-bg: #FEF3C7;
+
+  /* קטגוריות: צבע חזק, רקע לתג, טקסט על התג */
+  --color-craft: #D9468F;
+  --color-craft-bg: #FCE7F3;
+  --color-craft-text: #9D174D;
+
+  --color-game: #7C3AED;
+  --color-game-bg: #EDE9FE;
+  --color-game-text: #5B21B6;
+
+  --color-move: #16A34A;
+  --color-move-bg: #DCFCE7;
+  --color-move-text: #166534;
+
+  --color-think: #0EA5E9;
+  --color-think-bg: #E0F2FE;
+  --color-think-text: #075985;
+
+  --color-kitchen: #EA580C;
+  --color-kitchen-bg: #FFEDD5;
+  --color-kitchen-text: #9A3412;
+
+  /* רקע צבעוני שמתחלף לאט (דף ההתחברות) */
+  --animate-shift: shift 18s ease-in-out infinite;
+
+  @keyframes shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+}
+
+/* מעבר רך בין צבעי הקטגוריות */
+@utility bg-shift {
+  background-image: linear-gradient(
+    120deg,
+    var(--color-craft-bg),
+    var(--color-think-bg),
+    var(--color-kitchen-bg),
+    var(--color-game-bg),
+    var(--color-move-bg),
+    var(--color-craft-bg)
+  );
+  background-size: 400% 400%;
+}
+
+body {
+  @apply bg-mint text-ink font-sans;
+}

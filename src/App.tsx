@@ -29,16 +29,25 @@ import GuestRoute from './components/GuestRoute'
 function App() {
   return (
     <>
-      <h1>מה עושים היום?</h1>
+      <header className="bg-white border-b border-line">
+        <div className="max-w-6xl mx-auto px-4 md:px-8 py-3 flex flex-wrap items-center justify-between gap-3">
+          <h1 className="flex items-center gap-2 text-xl md:text-2xl font-extrabold text-ink">
+            <img src="/logo.svg" alt="" className="w-10 h-10 md:w-11 md:h-11" />
+            מה עושים היום?
+          </h1>
 
-      {/* {auth.loading && <p>טוען...</p>} */}
+          {/* {auth.loading && <p>טוען...</p>} */}
 
-      {/* <p>{auth.user ? auth.user.displayName : 'אין משתמש מחובר'}</p> */}
+          {/* <p>{auth.user ? auth.user.displayName : 'אין משתמש מחובר'}</p> */}
 
 
-      {/* <button onClick={() => auth.signOut()}>התנתקות</button> */}
+          {/* <button onClick={() => auth.signOut()}>התנתקות</button> */}
 
-      <Navbar></Navbar>
+          <Navbar></Navbar>
+        </div>
+      </header>
+
+      <main className="max-w-6xl mx-auto px-4 md:px-8 py-8">
         <Routes>
           <Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} />
           <Route path="/register" element={<GuestRoute><RegisterPage /></GuestRoute>} />
@@ -48,6 +57,7 @@ function App() {
           <Route path="/" element={<Navigate to="/activities" replace />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
+      </main>
     </>
   )
 }
